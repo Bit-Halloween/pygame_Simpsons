@@ -8,7 +8,8 @@ RA:1138704
   Tudo começou numa manhã comum em Springfield...
 
 Homer Simpson acordou sonhando com uma chuva de rosquinhas. Ao abrir os olhos,
-viu algo ainda mais incrível: as rosquinhas estavam realmente caindo do céu!
+viu algo ainda mais incrível:
+ as rosquinhas estavam realmente caindo do céu!
 
 Mas nem tudo era doce. Lisa, preocupada com a saúde do pai, havia convencido
 o Professor Frink a construir um canhão... de vegetais! Agora, enquanto o céu

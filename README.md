@@ -23,8 +23,12 @@ desciam em alta velocidade, tentando sabotar a comilança de Homer.
 
 🚀 Tecnologias e Bibliotecas Utilizadas pygame — desenvolvimento do jogo e gerenciamento de gráficos e áudio.
 
-random — geração de elementos aleatórios.
-os — manipulação de arquivos e diretórios do sistema.
-json — leitura e escrita de arquivos de configuração e dados.
-datetime (datetime do módulo datetime) — manipulação de datas e horários.
-sys — interação com o sistema e gerenciamento de execução.
+- random — geração de elementos aleatórios.
+
+- os — manipulação de arquivos e diretórios do sistema.
+
+- json — leitura e escrita de arquivos de configuração e dados.
+
+- datetime (datetime do módulo datetime) — manipulação de datas e horários.
+
+- sys — interação com o sistema e gerenciamento de execução.

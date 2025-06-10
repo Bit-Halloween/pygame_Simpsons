@@ -16,7 +16,7 @@ altura_tela = 700
 
 tamanho_tela = (largura_tela, altura_tela)
 tela = pygame.display.set_mode(tamanho_tela)
-pygame.display.set_caption("Homer's Donut & Veggie Dodge")
+pygame.display.set_caption("PyGame Simpsons")
 
 # --- Cores ---
 branco = (255, 255, 255)
@@ -67,7 +67,7 @@ homer_largura_desejada = 120
 homer_img = escalar_imagem(homer_img_original, homer_largura_desejada)
 larguraHomer = homer_img.get_width()
 alturaHomer = homer_img.get_height()
-item_largura_desejada = 60
+item_largura_desejada = 50
 donut_img = escalar_imagem(donut_img_original, item_largura_desejada)
 brocolis_img = escalar_imagem(brocolis_img_original, item_largura_desejada)
 larguraItem = item_largura_desejada
@@ -78,6 +78,13 @@ alturaItem = item_largura_desejada
 relogio = pygame.time.Clock()
 nome_jogador_global = ""
 mensagem_game_over_especifica = ""
+
+# Inicializar Bart
+bart_img = pygame.image.load("recursos/assets/bart.png")
+bart_img = pygame.transform.scale(bart_img, (100, 100))
+bart_x = -100  # Começa fora da tela
+bart_y = 100  # Altura onde ele aparece
+bart_speed = 3
 
 # --- Itens Disponíveis ---
 ITEM_DONUT = 'donut'
@@ -125,15 +132,37 @@ def obter_nome_jogador():
 def criar_novo_item_caindo():
     escolha = random.choices(itens_disponiveis, weights=[0.7, 0.3], k=1)[0]
     img, tipo = escolha
-    return {'image': img, 'rect': pygame.Rect(random.randint(0, largura_tela - larguraItem), -alturaItem, larguraItem, alturaItem), 'type': tipo, 'speed': random.uniform(2.5, 4.5)}
+    largura = img.get_width()
+    altura = img.get_height()
 
+    # Posição inicial
+    pos_x = random.randint(0, largura_tela - largura)
+    pos_y = -altura
+
+    # Hitbox normal (donut) ou reduzida (brocolis)
+    if tipo == ITEM_BROCOLIS:
+        hitbox_largura = int(largura * 0.2)
+        hitbox_altura = int(altura * 0.2)
+        offset_x = (largura - hitbox_largura) // 2
+        offset_y = (altura - hitbox_altura) // 2
+        hitbox = pygame.Rect(pos_x + offset_x, pos_y + offset_y, hitbox_largura, hitbox_altura)
+    else:
+        hitbox = pygame.Rect(pos_x, pos_y, largura, altura)
+
+    return {
+        'image': img,
+        'rect': hitbox,
+        'draw_pos': (pos_x, pos_y),  # onde desenhar a imagem
+        'type': tipo,
+        'speed': random.uniform(2.5, 4.5)
+    }
 def jogar():
     global nome_jogador_global, mensagem_game_over_especifica
-    print("DEBUG: Entrou em jogar()") # DEBUG
+    print("DEBUG: Entrou em jogar()")  # DEBUG
     if not nome_jogador_global:
         obter_nome_jogador()
         if not nome_jogador_global:
-            print("DEBUG: Nome não fornecido em jogar(), voltando para start_screen()") # DEBUG
+            print("DEBUG: Nome não fornecido em jogar(), voltando para start_screen()")  # DEBUG
             start_screen()
             return
 
@@ -144,6 +173,18 @@ def jogar():
     falling_items = [criar_novo_item_caindo()]
     max_falling_items = 3
     jogo_pausado = False
+
+    # Inicializar relógio
+    relogio = pygame.time.Clock()
+
+    # Inicializar Bart
+    bart_img = pygame.image.load("recursos/assets/bart.png")
+    bart_img = pygame.transform.scale(bart_img, (100, 100))
+    bart_x = -100  # Começa fora da tela
+    bart_y = posicaoYHomer
+    bart_speed = 3
+
+    # Animação do sol
     raio_sol_inicial = 30
     raio_sol_min = 25
     raio_sol_max = 35
@@ -180,7 +221,7 @@ def jogar():
             elif posicaoXHomer > largura_tela - larguraHomer: posicaoXHomer = largura_tela - larguraHomer
 
             if len(falling_items) < max_falling_items and random.randint(1, 100) < 4:
-                 falling_items.append(criar_novo_item_caindo())
+                falling_items.append(criar_novo_item_caindo())
 
             itens_para_remover = []
             rectHomer = pygame.Rect(posicaoXHomer, posicaoYHomer, larguraHomer, alturaHomer)
@@ -192,41 +233,45 @@ def jogar():
                         pygame.mixer.Sound.play(eat_sound)
                         itens_para_remover.append(item_jogo)
                     elif item_jogo['type'] == ITEM_BROCOLIS:
-                        print("DEBUG: Colisão com brócolis! Chamando dead_screen.") # DEBUG
                         pygame.mixer.music.stop()
                         pygame.mixer.Sound.play(yuck_sound)
                         pygame.mixer.Sound.play(game_over_sound)
                         escreverDados(nome_jogador_global, pontos)
                         mensagem_game_over_especifica = "Você comeu VEGETAL! D'oh!"
                         dead_screen(pontos)
-                        print("DEBUG: dead_screen retornou para jogar(). rodando_jogo = False.") # DEBUG
                         rodando_jogo = False
                         break
                 elif item_jogo['rect'].top > altura_tela:
                     if item_jogo['type'] == ITEM_DONUT:
-                        print("DEBUG: Donut perdido! Chamando dead_screen.") # DEBUG
                         pygame.mixer.music.stop()
                         pygame.mixer.Sound.play(game_over_sound)
                         escreverDados(nome_jogador_global, pontos)
                         mensagem_game_over_especifica = "Deixou uma rosquinha cair! D'oh!"
                         dead_screen(pontos)
-                        print("DEBUG: dead_screen retornou para jogar(). rodando_jogo = False.") # DEBUG
                         rodando_jogo = False
                         break
                     else:
                         itens_para_remover.append(item_jogo)
-            
+
             if not rodando_jogo:
-                print("DEBUG: Saindo do loop de itens porque rodando_jogo é False.") # DEBUG
                 break
 
             for item_removido in itens_para_remover:
                 if item_removido in falling_items:
-                     falling_items.remove(item_removido)
+                    falling_items.remove(item_removido)
             if not falling_items:
                 falling_items.append(criar_novo_item_caindo())
 
+        # Desenho do fundo
         tela.blit(fundoJogo_img, (0, 0))
+
+        # Atualizar e desenhar o Bart passando de skate
+        bart_x += bart_speed
+        if bart_x > largura_tela:
+            bart_x = -bart_img.get_width()
+        tela.blit(bart_img, (bart_x, bart_y))
+
+        # Animação do sol
         if pulsando_para_aumentar:
             raio_sol_atual += velocidade_pulsacao_sol
             if raio_sol_atual >= raio_sol_max:
@@ -261,9 +306,8 @@ def jogar():
 
         pygame.display.update()
         relogio.tick(60)
-    
-    print(f"DEBUG: Fim do loop principal de jogar. rodando_jogo = {rodando_jogo}. Retornando de jogar().") # DEBUG
-    return # Adicionado retorno explícito
+
+    return
 
 def start_screen():
     global nome_jogador_global, mensagem_game_over_especifica

@@ -5,15 +5,15 @@ Desenvolvedor: Eduardo Barreda Mello
 RA:1138704
 
 📖 História do Jogo:
-  Tudo começou numa manhã comum em Springfield...
+Tudo começou numa manhã comum em Springfield...
 Homer Simpson acordou sonhando com uma chuva de rosquinhas. Ao abrir os olhos,
 viu algo ainda mais incrível: as rosquinhas estavam realmente caindo do céu!
 Mas nem tudo era doce. Lisa, preocupada com a saúde do pai, havia convencido
 o Professor Frink a construir um canhão... de vegetais! Agora, enquanto o céu
-despejava deliciosas rosquinhas, vegetais também 
+despejava deliciosas rosquinhas, vegetais também
 desciam em alta velocidade, tentando sabotar a comilança de Homer.
 
-# 🍩 Pygame\_Simpsons
+# 🍩 Pygame_Simpsons
 
 Um jogo desenvolvido com Python e Pygame onde você controla o Homer e deve coletar rosquinhas enquanto evita os vegetais! Use comandos de voz, veja seu desempenho em tempo real e acompanhe o ranking dos maiores pontuadores.
 
@@ -21,10 +21,10 @@ Um jogo desenvolvido com Python e Pygame onde você controla o Homer e deve cole
 
 ## 🕹️ Como Jogar
 
-* Use as **setas esquerda/direita** para mover o Homer.
-* Pressione **espaço** para pausar o jogo.
-* Evite brócolis e pegue o máximo de rosquinhas!
-* O jogo só inicia após você dizer "rosquinhas "no microfone.
+- Use as **setas esquerda/direita** para mover o Homer.
+- Pressione **espaço** para pausar o jogo.
+- Evite brócolis e pegue o máximo de rosquinhas!
+- O jogo só inicia após você dizer "rosquinhas "no microfone.
 
 ---
 
@@ -103,11 +103,11 @@ pip install cx_Freeze
 
 ## 🏆 Recursos Extras
 
-* Tela de boas-vindas com nome personalizado
-* Comando de voz para iniciar
-* Registro automático de logs em `log.dat`
-* Tela de morte com ranking dos 5 maiores
-* Destaque visual para o campeão e jogador atual
+- Tela de boas-vindas com nome personalizado
+- Comando de voz para iniciar
+- Registro automático de logs em `log.dat`
+- Tela de morte com ranking dos 5 maiores
+- Destaque visual para o campeão e jogador atual
 
 ---
 
@@ -134,9 +134,9 @@ pygame_simpsons/
 
 ## 🙌 Créditos
 
-* Desenvolvido por Eduardo Barreda
-* Inspirado nos personagens de *Os Simpsons* (uso não comercial)
+- 👾 Desenvolvido por Eduardo Barreda
+-     Inspirado nos personagens de *Os Simpsons* (uso não comercial)
+
+- 👾 Testador do jogo: Diego Meira, RA: 1109435
 
 ---
-
-##

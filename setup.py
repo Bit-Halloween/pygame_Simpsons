@@ -4,7 +4,6 @@ import os
 # Garante que arquivos de recurso sejam incluídos
 incluir_arquivos = [
     ("recursos", "recursos"),
-    "base.atitus",
     "log.dat"
 ]
 

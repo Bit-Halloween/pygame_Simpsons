@@ -5,7 +5,45 @@ from tkinter import messagebox
 from recursos.funcoes import inicializarBancoDeDados, escreverDados # Assuming funcoes.py is in a subfolder 'recursos'
 import json
 import sys
+import speech_recognition as sr
 
+def aguardar_comando_voz_visual():
+    recognizer = sr.Recognizer()
+    with sr.Microphone() as source:
+        reconhecido = False
+        pygame.display.set_caption("Fale para Iniciar")
+
+        while not reconhecido:
+            for evento in pygame.event.get():
+                if evento.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+            tela.fill((255, 255, 255))  # fundo branco
+
+            msg1 = fonteMenu.render("Diga: 'eu amo rosquinhas'", True, (0, 0, 0))
+            msg2 = fonteMenu.render("Usando microfone...", True, (100, 100, 100))
+            msg1_rect = msg1.get_rect(center=(largura_tela // 2, altura_tela // 2 - 30))
+            msg2_rect = msg2.get_rect(center=(largura_tela // 2, altura_tela // 2 + 10))
+            tela.blit(msg1, msg1_rect)
+            tela.blit(msg2, msg2_rect)
+
+            pygame.display.update()
+
+            try:
+                with sr.Microphone() as source:
+                    recognizer.adjust_for_ambient_noise(source, duration=1)
+                    audio = recognizer.listen(source, timeout=4)
+                    frase = recognizer.recognize_google(audio, language="pt-BR")
+                    print(f"Você disse: {frase}")
+                    if frase.lower().strip() == "eu amo rosquinhas":
+                        reconhecido = True
+                    else:
+                        print("Frase incorreta.")
+            except sr.UnknownValueError:
+                print("Não entendi. Tente de novo.")
+            except sr.WaitTimeoutError:
+                print("Nada detectado.")
 
 pygame.init()
 inicializarBancoDeDados()
@@ -217,8 +255,7 @@ def jogar():
                 if not jogo_pausado:
                     if (evento.key == pygame.K_LEFT and movimentoXHomer < 0) or \
                        (evento.key == pygame.K_RIGHT and movimentoXHomer > 0):
-                        movimentoXHomer = 0
-            
+                        movimentoXHomer = 0       
 
         if not jogo_pausado:
             posicaoXHomer += movimentoXHomer
@@ -361,10 +398,12 @@ def start_screen():
                     if startButtonRect.collidepoint(mouse_pos):
                         obter_nome_jogador()
                         if nome_jogador_global:
-                           print("DEBUG: start_screen chamando jogar()") # DEBUG
-                           jogar()
-                           print("DEBUG: jogar() retornou para start_screen. Definindo rodando_start = False.") # DEBUG
-                           rodando_start = False # CORREÇÃO PRINCIPAL AQUI
+                            aguardar_comando_voz_visual()
+                            jogar()
+                            print("DEBUG: Aguardar comando de voz visual retornou. Chamando jogar()") # DEBUG
+                            jogar()
+                            print("DEBUG: jogar() retornou para start_screen. Definindo rodando_start = False.") # DEBUG
+                            rodando_start = False # CORREÇÃO PRINCIPAL AQUI
                     if quitButtonRect.collidepoint(mouse_pos):
                         pygame.quit()
                         sys.exit()

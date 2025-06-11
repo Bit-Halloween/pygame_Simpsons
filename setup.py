@@ -24,7 +24,20 @@ setup(
     description="Jogo do Homer em Pygame com comandos de voz",
     options={
         "build_exe": {
-            "packages": ["pygame", "speech_recognition", "pyaudio", "json", "datetime", "aifc"],
+            "packages": [
+    "pygame",
+    "speech_recognition",
+    "pyaudio",
+    "json",
+    "datetime",
+    "aifc",
+    "chunk",
+    "wave",
+    "queue",
+    "math",
+    "array"
+]
+,
             "include_files": incluir_arquivos,
             "include_msvcr": True
         }

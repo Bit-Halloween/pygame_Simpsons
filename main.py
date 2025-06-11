@@ -168,6 +168,7 @@ def obter_nome_jogador():
     root_tk.destroy()  # Destruir después para liberar recursos
 
 def criar_novo_item_caindo():
+
     escolha = random.choices(itens_disponiveis, weights=[0.7, 0.3], k=1)[0]
     img, tipo = escolha
     largura = img.get_width()
@@ -194,6 +195,51 @@ def criar_novo_item_caindo():
         'type': tipo,
         'speed': random.uniform(2.5, 4.5)
     }
+
+def tela_boas_vindas(nome_jogador):
+    larguraButton = 200
+    alturaButton  = 60
+    cor_botao = amarelo_simpsons
+    cor_texto = preto
+
+    pos_x_botao = largura_tela // 2 - larguraButton // 2
+    pos_y_botao = altura_tela - alturaButton - 80
+
+    rodando = True
+    while rodando:
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if evento.type == pygame.MOUSEBUTTONDOWN:
+                if evento.button == 1:
+                    mouse_pos = pygame.mouse.get_pos()
+                    if pygame.Rect(pos_x_botao, pos_y_botao, larguraButton, alturaButton).collidepoint(mouse_pos):
+                        rodando = False
+        tela.fill(branco)
+
+
+        
+
+        texto_boas_vindas = fonteMenu.render(f"Bem-vindo, {nome_jogador}!", True, preto)
+        texto_instrucao1 = fonteMenu.render("Evite vegetais e colete rosquinhas.", True, preto)
+        texto_instrucao2 = fonteMenu.render("Use as setas   <-  ->   para se mover e tecla espaço para pausar.", True, preto)
+
+        tela.blit(texto_boas_vindas, texto_boas_vindas.get_rect(center=(largura_tela // 2, 150)))
+        tela.blit(texto_instrucao1, texto_instrucao1.get_rect(center=(largura_tela // 2, 250)))
+        tela.blit(texto_instrucao2, texto_instrucao2.get_rect(center=(largura_tela // 2, 300)))
+
+        # Botão começar
+        botao_rect = pygame.Rect(pos_x_botao, pos_y_botao, larguraButton, alturaButton)
+        pygame.draw.rect(tela, cor_botao, botao_rect, border_radius=15)
+        texto_botao = fonteMenu.render("Começar!", True, cor_texto)
+        texto_botao_rect = texto_botao.get_rect(center=botao_rect.center)
+        tela.blit(texto_botao, texto_botao_rect)
+
+        pygame.display.update()
+        relogio.tick(60)
+
+
 def jogar():
     global nome_jogador_global, mensagem_game_over_especifica
     print("DEBUG: Entrou em jogar()")  # DEBUG
@@ -398,6 +444,7 @@ def start_screen():
                     if startButtonRect.collidepoint(mouse_pos):
                         obter_nome_jogador()
                         if nome_jogador_global:
+                            tela_boas_vindas(nome_jogador_global)
                             aguardar_comando_voz_visual()
                             jogar()
                             print("DEBUG: Aguardar comando de voz visual retornou. Chamando jogar()") # DEBUG

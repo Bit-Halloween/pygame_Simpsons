@@ -2,7 +2,6 @@ import os, time
 import json
 from datetime import datetime
 
-
 def limpar_tela():
     os.system("cls")
     
@@ -17,22 +16,38 @@ def inicializarBancoDeDados():
         print("Banco de Dados Inexistente. Criando...")
         banco = open("base.atitus","w")
     
+
+
 def escreverDados(nome, pontos):
-    # INI - inserindo no arquivo
-    banco = open("base.atitus","r")
-    dados = banco.read()
-    banco.close()
-    print("dados",type(dados))
-    if dados != "":
-        dadosDict = json.loads(dados)
-    else:
+    data_hora = datetime.now()
+    data_str = data_hora.strftime("%d/%m/%Y")
+    hora_str = data_hora.strftime("%H:%M:%S")
+
+    # Atualiza base.atitus (por jogador)
+    try:
+        with open("base.atitus", "r") as banco:
+            dados = banco.read()
+            dadosDict = json.loads(dados) if dados else {}
+    except FileNotFoundError:
         dadosDict = {}
-        
-    data_br = datetime.now().strftime("%d/%m/%Y")
-    dadosDict[nome] = (pontos, data_br)
-    
-    banco = open("base.atitus","w")
-    banco.write(json.dumps(dadosDict))
-    banco.close()
-    
-    # END - inserindo no arquivo
+
+    dadosDict[nome] = (pontos, data_str)
+    with open("base.atitus", "w") as banco:
+        banco.write(json.dumps(dadosDict))
+
+    # Adiciona ao histórico log.dat
+    try:
+        with open("log.dat", "r") as f:
+            historico = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        historico = []
+
+    historico.append({
+        "nome": nome,
+        "pontos": pontos,
+        "data": data_str,
+        "hora": hora_str
+    })
+
+    with open("log.dat", "w") as f:
+        json.dump(historico[-100:], f, indent=2)

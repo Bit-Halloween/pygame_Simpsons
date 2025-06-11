@@ -1,17 +1,18 @@
 import pygame
 import random
 import tkinter as tk
-from tkinter import messagebox
-from recursos.funcoes import inicializarBancoDeDados, escreverDados # Assuming funcoes.py is in a subfolder 'recursos'
 import json
 import sys
 import speech_recognition as sr
+from tkinter import messagebox
+from recursos.funcoes import inicializarBancoDeDados, escreverDados 
+
 
 def aguardar_comando_voz_visual():
     recognizer = sr.Recognizer()
     with sr.Microphone() as source:
         reconhecido = False
-        pygame.display.set_caption("Fale para Iniciar")
+        
 
         while not reconhecido:
             for evento in pygame.event.get():
@@ -21,7 +22,7 @@ def aguardar_comando_voz_visual():
 
             tela.fill((255, 255, 255))  # fundo branco
 
-            msg1 = fonteMenu.render("Diga: 'eu amo rosquinhas'", True, (0, 0, 0))
+            msg1 = fonteMenu.render("Diga: 'rosquinhas'", True, (0, 0, 0))
             msg2 = fonteMenu.render("Usando microfone...", True, (100, 100, 100))
             msg1_rect = msg1.get_rect(center=(largura_tela // 2, altura_tela // 2 - 30))
             msg2_rect = msg2.get_rect(center=(largura_tela // 2, altura_tela // 2 + 10))
@@ -36,7 +37,7 @@ def aguardar_comando_voz_visual():
                     audio = recognizer.listen(source, timeout=4)
                     frase = recognizer.recognize_google(audio, language="pt-BR")
                     print(f"Você disse: {frase}")
-                    if frase.lower().strip() == "eu amo rosquinhas":
+                    if frase.lower().strip() == "rosquinhas":
                         reconhecido = True
                     else:
                         print("Frase incorreta.")
@@ -466,44 +467,9 @@ def dead_screen(pontos_finais):
     alturaButton  = 60
     cor_botao = amarelo_simpsons
     cor_texto_botao = preto
-    pos_x_botao = largura_tela/2 - larguraButton/2
+    pos_x_botao = largura_tela * 0.6
     pos_y_botao_jogar_novamente = altura_tela * 0.60
     pos_y_botao_menu = altura_tela * 0.60 + alturaButton + 30
-
-    def mostrar_log_pontuacoes_tk():
-        log_root = tk.Tk()
-        log_root.title("Histórico de Pontuações")
-        # ... (código da janela de log mantido como antes) ...
-        largura_janela_log = 450
-        altura_janela_log = 350
-        pos_x_log = (log_root.winfo_screenwidth() - largura_janela_log) // 2
-        pos_y_log = (log_root.winfo_screenheight() - altura_janela_log) // 2
-        log_root.geometry(f"{largura_janela_log}x{altura_janela_log}+{pos_x_log}+{pos_y_log}")
-        log_root.attributes("-topmost", True)
-        tk.Label(log_root, text="Placar dos Campeões (de Rosquinhas):", font=("Comic Sans MS", 16)).pack(pady=10)
-        frame_lista = tk.Frame(log_root)
-        frame_lista.pack(pady=10, padx=10, fill="both", expand=True)
-        scrollbar = tk.Scrollbar(frame_lista, orient="vertical")
-        listbox = tk.Listbox(frame_lista, width=60, height=10, font=("Comic Sans MS", 10), yscrollcommand=scrollbar.set)
-        scrollbar.config(command=listbox.yview)
-        scrollbar.pack(side="right", fill="y")
-        listbox.pack(side="left", fill="both", expand=True)
-        try:
-            with open("base.atitus", "r") as banco_log:
-                dados_log_str = banco_log.read()
-            if dados_log_str:
-                log_partidas = json.loads(dados_log_str)
-                sorted_log = sorted(log_partidas.items(), key=lambda item: (item[1][0], item[0]), reverse=True)
-                for i, (nome_log, (pts_log, data_log)) in enumerate(sorted_log):
-                    listbox.insert(tk.END, f"{i+1}. {nome_log}: {pts_log} rosquinhas em {data_log}")
-            else: listbox.insert(tk.END, "Ninguém jogou ainda? D'oh!")
-        except FileNotFoundError: listbox.insert(tk.END, "Ficheiro de pontuações sumiu! Foi o Bart?")
-        except json.JSONDecodeError: listbox.insert(tk.END, "Ficheiro de pontuações está estranho... Flanders mexeu aqui?")
-        except Exception as e: listbox.insert(tk.END, f"Erro ao ler pontuações: {e}")
-        tk.Button(log_root, text="Fechar", command=log_root.destroy, font=("Comic Sans MS", 12)).pack(pady=10)
-        log_root.mainloop()
-
-    mostrar_log_pontuacoes_tk()
     rodando_dead = True
     while rodando_dead:
         mouse_pos = pygame.mouse.get_pos()
@@ -523,17 +489,79 @@ def dead_screen(pontos_finais):
         texto_jogar_novamente = fonteMenu.render("Jogar Novamente", True, cor_texto_botao)
         texto_jogar_novamente_rect = texto_jogar_novamente.get_rect(center=jogarNovamenteButtonRect.center)
         tela.blit(texto_jogar_novamente, texto_jogar_novamente_rect)
+
+
         menuButtonRect = pygame.Rect(pos_x_botao, pos_y_botao_menu, larguraButton, alturaButton)
         pygame.draw.rect(tela, cor_botao, menuButtonRect, border_radius=15)
         texto_menu = fonteMenu.render("Menu Principal", True, cor_texto_botao)
         texto_menu_rect = texto_menu.get_rect(center=menuButtonRect.center)
         tela.blit(texto_menu, texto_menu_rect)
+       # Mostrar os 5 maiores registros de pontuação (ordenado)
+        try:
+            with open("log.dat", "r") as f:
+                historico = json.load(f)
+            historico_ordenado = sorted(historico, key=lambda x: x["pontos"], reverse=True)
+            top5 = historico_ordenado[:5]
+            maior_pontuador = top5[0]["nome"] if top5 else None
+
+            y_log = altura_tela * 0.55  # mais acima que antes
+            x_log = 40
+     
+            # Título "Ranking"
+            titulo = fonteMenu.render("Ranking:", True, preto)
+            tela.blit(titulo, (x_log, y_log - 40))
+
+            try:
+                with open("log.dat", "r") as f:
+                    historico = json.load(f)
+                historico_ordenado = sorted(historico, key=lambda x: x["pontos"], reverse=True)
+                top5 = historico_ordenado[:5]
+                maior_pontuador = top5[0]["nome"] if top5 else None
+                
+
+                for log in top5:
+                    texto = f"{log['nome']} - {log['pontos']} pts em {log['data']} às {log['hora']}"
+                    cor_texto = vermelho_perigo if log["nome"] == nome_jogador_global else preto
+                    texto_log = fonteNick.render(texto, True, cor_texto)
+
+                    # Fundo com padding
+                    largura = texto_log.get_width() + 20
+                    altura = texto_log.get_height() + 10
+                    fundo = pygame.Surface((largura, altura), pygame.SRCALPHA)
+                    fundo.fill((255, 255, 255, 180))
+                    tela.blit(fundo, (x_log, y_log))
+
+                    # Troféu
+                    if log["nome"] == maior_pontuador:
+                        trofeu = fonteNick.render("🏆", True, (255, 215, 0))
+                        tela.blit(trofeu, (x_log - 30, y_log + 5))
+
+                    # Texto por cima
+                    tela.blit(texto_log, (x_log + 10, y_log + 5))
+
+                    y_log += altura + 10  # mais espaço entre registros
+            except Exception as e:
+                erro_txt = fonteNick.render("Erro ao ler log.dat", True, vermelho_perigo)
+                tela.blit(erro_txt, (x_log, y_log))
+
+
+
+                # 🏆 Desenha um emoji de troféu ao lado do campeão
+                if log["nome"] == maior_pontuador:
+                    trofeu = fonteNick.render("", True, (255, 215, 0))
+                    tela.blit(trofeu, (largura_tela * 0.1 - 30, y_log))
+                y_log += 25
+        except Exception as e:
+            erro_txt = fonteNick.render("Erro ao ler log.dat", True, vermelho_perigo)
+            tela.blit(erro_txt, (largura_tela * 0.1, altura_tela * 0.75))
+
 
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             if evento.type == pygame.MOUSEBUTTONDOWN:
+  
                 if evento.button == 1:
                     if jogarNovamenteButtonRect.collidepoint(mouse_pos):
                         print("DEBUG: dead_screen chamando jogar()") # DEBUG
@@ -545,6 +573,7 @@ def dead_screen(pontos_finais):
                         start_screen()
                         print("DEBUG: start_screen() retornou para dead_screen. Definindo rodando_dead = False.") # DEBUG
                         rodando_dead = False
+                        
         pygame.display.update()
         relogio.tick(60)
     print(f"DEBUG: Fim do loop principal de dead_screen. rodando_dead = {rodando_dead}. Retornando de dead_screen().") # DEBUG

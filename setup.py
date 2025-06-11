@@ -32,6 +32,7 @@ setup(
     "datetime",
     "aifc",
     "chunk",
+    "audioop",
     "wave",
     "queue",
     "math",

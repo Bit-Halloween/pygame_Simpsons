@@ -177,12 +177,16 @@ def jogar():
     # Inicializar relógio
     relogio = pygame.time.Clock()
 
-    # Inicializar Bart
+    # Inicializar Bart (movimento aleatório)
     bart_img = pygame.image.load("recursos/assets/bart.png")
     bart_img = pygame.transform.scale(bart_img, (100, 100))
-    bart_x = -100  # Começa fora da tela
-    bart_y = posicaoYHomer
-    bart_speed = 3
+
+    bart_x = random.randint(0, largura_tela - bart_img.get_width())
+    bart_y = random.randint(0, altura_tela - bart_img.get_height())
+    bart_alvo_x = random.randint(0, largura_tela - bart_img.get_width())
+    bart_alvo_y = random.randint(0, altura_tela - bart_img.get_height())
+    bart_velocidade = 2
+
 
     # Animação do sol
     raio_sol_inicial = 30
@@ -214,6 +218,7 @@ def jogar():
                     if (evento.key == pygame.K_LEFT and movimentoXHomer < 0) or \
                        (evento.key == pygame.K_RIGHT and movimentoXHomer > 0):
                         movimentoXHomer = 0
+            
 
         if not jogo_pausado:
             posicaoXHomer += movimentoXHomer
@@ -265,11 +270,21 @@ def jogar():
         # Desenho do fundo
         tela.blit(fundoJogo_img, (0, 0))
 
-        # Atualizar e desenhar o Bart passando de skate
-        bart_x += bart_speed
-        if bart_x > largura_tela:
-            bart_x = -bart_img.get_width()
-        tela.blit(bart_img, (bart_x, bart_y))
+                # Atualizar posição do Bart de forma aleatória
+        dx = bart_alvo_x - bart_x
+        dy = bart_alvo_y - bart_y
+        distancia = (dx**2 + dy**2) ** 0.5
+
+        if distancia < 5:
+            # Sorteia novo destino
+            bart_alvo_x = random.randint(0, largura_tela - bart_img.get_width())
+            bart_alvo_y = random.randint(0, altura_tela - bart_img.get_height())
+        else:
+            # Move em direção ao alvo
+            bart_x += bart_velocidade * dx / distancia
+            bart_y += bart_velocidade * dy / distancia
+        # Desenhar Bart# Desenha o Bart
+        tela.blit(bart_img, (int(bart_x), int(bart_y)))
 
         # Animação do sol
         if pulsando_para_aumentar:

@@ -506,7 +506,7 @@ def dead_screen(pontos_finais):
 
             y_log = altura_tela * 0.55  # mais acima que antes
             x_log = 40
-     
+      
             # Título "Ranking"
             titulo = fonteMenu.render("Ranking:", True, preto)
             tela.blit(titulo, (x_log, y_log - 40))

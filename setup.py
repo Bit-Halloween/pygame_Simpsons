@@ -1,31 +1,34 @@
 from cx_Freeze import setup, Executable
 import os
 
-executaveis = [
+# Garante que arquivos de recurso sejam incluídos
+incluir_arquivos = [
+    ("recursos", "recursos"),
+    "base.atitus",
+    "log.dat"
+]
+
+# Configurações do executável
+executables = [
     Executable(
-        script="main_simpsons_com_verduras_py.py",
-        icon="recursos/assets/icone_simpsons.ico"
+        script="main.py",
+        icon="recursos/assets/icone.ico",
+        base=None,
+        target_name="HomerDonuts.exe"
     )
 ]
 
+# Configuração final do setup
 setup(
-    name="Paygame Simpsons",
+    name="Pygame_Simpsons",
     version="1.0",
-    description="Jogo criado com Pygame",
+    description="Jogo do Homer em Pygame com comandos de voz",
     options={
         "build_exe": {
-            "packages": ["pygame", "tkinter", "json", "random"],
-            "include_files": [
-                ("recursos/assets", "recursos/assets"),
-                ("funcoes.py", "recursos/funcoes.py"),
-                "base.atitus"
-            ]
+            "packages": ["pygame", "speech_recognition", "pyaudio", "json", "datetime"],
+            "include_files": incluir_arquivos,
+            "include_msvcr": True
         }
     },
-    executables=executaveis
+    executables=executables
 )
-# Este script é usado para empacotar o jogo usando cx_Freeze.
-# Certifique-se de que cx_Freeze está instalado no seu ambiente Python.
-# Você pode instalar cx_Freeze usando o comando: pip install cx_Freeze
-# Para construir o executável, execute o seguinte comando no terminal:
-# python setup.py build
